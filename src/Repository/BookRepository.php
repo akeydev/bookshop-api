@@ -40,4 +40,17 @@ class BookRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    public function findLike($column, $value): array
+       {
+           return $this->createQueryBuilder('b')
+               ->andWhere("b.$column like :val")
+               ->setParameter('val', '%'. $value .'%')
+               ->orderBy('b.id', 'ASC')
+               ->setMaxResults(10)
+               ->getQuery()
+               ->getResult()
+           ;
+       }
 }

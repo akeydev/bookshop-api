@@ -23,7 +23,12 @@ class BooksWithReview implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Object|array|null
     {
         if ($operation instanceof CollectionOperationInterface) {
-        $data = $this->entityManager->getRepository(Book::class)->findAll();
+            if (isset($context['filters'])) {
+                $author = $context['filters']['author'];
+                $data = $this->entityManager->getRepository(Book::class)->findLike("author", $author);
+            }else{
+                $data = $this->entityManager->getRepository(Book::class)->findAll();
+            }
         $book = [];
              foreach ($data as $key => $value) {
                 $author  = $value->getAuthor();

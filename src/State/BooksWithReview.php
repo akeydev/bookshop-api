@@ -6,7 +6,6 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Book;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class BooksWithReview implements ProviderInterface
@@ -23,7 +22,8 @@ class BooksWithReview implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Object|array|null
     {
         if ($operation instanceof CollectionOperationInterface) {
-            if (isset($context['filters'])) {
+
+            if (isset($context['filters']['author'])) {
                 $author = $context['filters']['author'];
                 $data = $this->entityManager->getRepository(Book::class)->findLike("author", $author);
             }else{

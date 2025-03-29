@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class ExceptionListener
 {
-    #[AsEventListener(event: KernelEvents::EXCEPTION)]
+    // #[AsEventListener(event: KernelEvents::EXCEPTION)]
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();

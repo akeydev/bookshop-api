@@ -7,6 +7,8 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\BookRepository;
 use App\State\BooksWithReview;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +23,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['book']]
     )
 ]
-class Book
+#[Get()]
+#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
+class Book 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -57,6 +62,11 @@ class Book
     #[ApiFilter(SearchFilter::class,strategy:'partial')]
     #[Groups('book')]
     private ?string $author = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups('book')]
+    public ?User $owner = null;
 
     public function __construct()
     {
@@ -149,6 +159,18 @@ class Book
     public function setAuthor(?string $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

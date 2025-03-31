@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new Put(processor: UserPasswordHasher::class),
         new Patch(processor: UserPasswordHasher::class),
-        new Delete(),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create', 'user:update']],
@@ -50,6 +50,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
+    #[Groups(['user:create', 'user:update','user:read'])]
     private ?string $password = null;
 
     #[Assert\NotBlank(groups: ['user:create'])]
@@ -57,6 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:create', 'user:read', 'user:update'])]
     private array $roles = [];
 
     public function getId(): ?int
@@ -109,7 +111,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-
+        
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
